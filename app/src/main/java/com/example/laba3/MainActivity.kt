@@ -40,6 +40,7 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.text.TextStyle
 
 
 class MainActivity : ComponentActivity() {
@@ -72,23 +73,26 @@ class MainActivity : ComponentActivity() {
 fun MainScreen(modifier: Modifier = Modifier){
     val TextFieldModifier = Modifier
         .padding(all = 10.dp)
-        .width(150.dp)
-        .height(30.dp)
+        .width(200.dp)
+        .height(56.dp)
+
+
 
     Column(modifier = modifier){
-        val summ = remember { mutableStateOf("") }
+        var summ = remember { mutableStateOf("") }
         Row(modifier = Modifier.fillMaxWidth(),verticalAlignment = Alignment.CenterVertically){
             TextCell("Сумма заказа:")
+
             TextField(value = summ.value, modifier=TextFieldModifier, onValueChange = {
-                newText -> summ.value=newText},  )
+                newText -> summ.value=newText}, enabled = true, textStyle = TextStyle(fontSize = 18.sp))
         }
 
-        val numberofdishes = remember { mutableStateOf("") }
+        var numberofdishes = remember { mutableStateOf("") }
         Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically){
             TextCell("Количество блюд:")
             TextField(value = numberofdishes.value, modifier=TextFieldModifier,  onValueChange = {
                 newText -> numberofdishes.value = newText
-            })
+            }, enabled = true)
         }
         TextCell("Чаевые:", modifier = Modifier.padding(top = 200.dp))
         Row(modifier = Modifier.fillMaxWidth()){
