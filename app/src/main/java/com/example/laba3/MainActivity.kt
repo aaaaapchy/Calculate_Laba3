@@ -1,5 +1,6 @@
 package com.example.laba3
 
+import android.R.attr.start
 import android.R.attr.text
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -21,6 +22,8 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material3.Slider
 import androidx.compose.material3.TextField
 
@@ -41,6 +44,11 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.text.TextStyle
+import kotlin.math.round
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.derivedStateOf
+
 
 
 class MainActivity : ComponentActivity() {
@@ -79,6 +87,7 @@ fun MainScreen(modifier: Modifier = Modifier){
 
 
     Column(modifier = modifier){
+        //Сумма заказа
         var summ = remember { mutableStateOf("") }
         Row(modifier = Modifier.fillMaxWidth(),verticalAlignment = Alignment.CenterVertically){
             TextCell("Сумма заказа:")
@@ -86,7 +95,7 @@ fun MainScreen(modifier: Modifier = Modifier){
             TextField(value = summ.value, modifier=TextFieldModifier, onValueChange = {
                 newText -> summ.value=newText}, enabled = true, textStyle = TextStyle(fontSize = 18.sp))
         }
-
+        //Количество блюд
         var numberofdishes = remember { mutableStateOf("") }
         Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically){
             TextCell("Количество блюд:")
@@ -94,49 +103,74 @@ fun MainScreen(modifier: Modifier = Modifier){
                 newText -> numberofdishes.value = newText
             }, enabled = true)
         }
-        TextCell("Чаевые:", modifier = Modifier.padding(top = 200.dp))
-        Row(modifier = Modifier.fillMaxWidth()){
+        //Slider
             var sliderPosition by remember { mutableFloatStateOf(25f) }
-            Slider(
-                modifier = Modifier.padding(10.dp),
-                value = sliderPosition,
-                valueRange = 1f..25f,
-                onValueChange = {},
-                steps = 0
-            )
-        }
-        Row(modifier = Modifier.fillMaxWidth()){
-            Column (verticalArrangement = Arrangement.Center){
-                TextCell("Скидка:")
+
+            Row(modifier = Modifier.fillMaxWidth().padding(top=200.dp)){
+                TextCell("Чаевые:")
+                Text(text="${sliderPosition.toInt()}%", fontSize = 16.sp, modifier=Modifier.padding(all = 4.dp))
             }
 
-            Column {
-                val state = remember { mutableStateOf(true) }
-                Row (modifier = Modifier.padding(start = 10.dp, bottom = 0.dp).fillMaxWidth() ,verticalAlignment = Alignment.CenterVertically){
-                    RadioButton(
-                        selected = state.value,
-                        onClick = { state.value = true }
-                    )
-                    RadioButton(
-                        selected = state.value,
-                        onClick = { state.value = true }
-                    )
-                    RadioButton(
-                        selected = state.value,
-                        onClick = { state.value = true }
-                    )
-                    RadioButton(
-                        selected = state.value,
-                        onClick = { state.value = true }
-                    )
-                }
-                Row(modifier = Modifier.padding(start = 10.dp, bottom = 0.dp, top = 0.dp).fillMaxWidth(),verticalAlignment = Alignment.CenterVertically){
-                    Text(text = "3%", modifier= Modifier.padding(10.dp), textAlign = TextAlign.Center, fontSize = 15.sp)
-                    Text(text = "5%", modifier= Modifier.padding(10.dp), textAlign = TextAlign.Center, fontSize = 15.sp)
-                    Text(text = "7%", modifier= Modifier.padding(10.dp), textAlign = TextAlign.Center, fontSize = 15.sp)
-                    Text(text = "10%", modifier= Modifier.padding(10.dp), textAlign = TextAlign.Center, fontSize = 15.sp)
+            Row(modifier = Modifier.fillMaxWidth()){
+
+                Slider(
+                    modifier = Modifier.padding(10.dp),
+                    value = sliderPosition,
+                    valueRange = 0f..25f,
+                    onValueChange = {sliderPosition = it},
+                    steps = 24
+                )
+            }
+
+        Row(modifier = Modifier.fillMaxWidth()){
+
+           // val (selectedOption, onOptionSelected) = remember { mutableStateOf(sails[0]) }
+            val sails = listOf("3", "5", "7", "10")
+
+            var selectedOption by remember(numberofdishes.value) {
+                mutableStateOf(
+                    try {
+                        val count = numberofdishes.value.toInt()
+                        when (count) {
+                            in 1..2 -> sails[0]
+                            in 3..5 -> sails[1]
+                            in 6..10 -> sails[2]
+                            else -> sails[3]
+                        }
+                    } catch (e: NumberFormatException) {
+                        sails[3]
+                    }
+                )
+            }
+
+
+
+                Column (verticalArrangement = Arrangement.Center, modifier = Modifier.padding(30.dp), horizontalAlignment = Alignment.Start){
+
+                Text(text = "Скидка: ${selectedOption}%", fontSize = 16.sp)
+            }
+
+
+            sails.forEach { text ->
+                Column(modifier = Modifier.selectableGroup()) {
+
+
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Start) {
+                        RadioButton(
+                            selected = (text == selectedOption),
+                            onClick = {text == selectedOption}
+                        )
+                    }
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
+                        Text( text = "${text}%", fontSize = 16.sp, textAlign = TextAlign.Center, modifier = Modifier.padding(start = 15.dp))
+                    }
+
+
+
+
                 }
             }
+
         }
     }
 
@@ -149,7 +183,7 @@ fun TextCell(text: String, modifier: Modifier=Modifier){
         .padding(all = 4.dp)
 
 
-    Text(text = text, modifier=Textmodifier, textAlign = TextAlign.Center, fontSize = 15.sp)
+    Text(text = text, modifier=Textmodifier, textAlign = TextAlign.Center, fontSize = 16.sp)
 }
 
 @Preview(showBackground = true)
