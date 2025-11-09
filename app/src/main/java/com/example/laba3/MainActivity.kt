@@ -121,29 +121,23 @@ fun MainScreen(modifier: Modifier = Modifier){
                     steps = 24
                 )
             }
-
-        Row(modifier = Modifier.fillMaxWidth()){
-
-           // val (selectedOption, onOptionSelected) = remember { mutableStateOf(sails[0]) }
-            val sails = listOf("3", "5", "7", "10")
-
-            var selectedOption by remember(numberofdishes.value) {
-                mutableStateOf(
-                    try {
-                        val count = numberofdishes.value.toInt()
-                        when (count) {
-                            in 1..2 -> sails[0]
-                            in 3..5 -> sails[1]
-                            in 6..10 -> sails[2]
-                            else -> sails[3]
-                        }
-                    } catch (e: NumberFormatException) {
-                        sails[3]
+        val sails = listOf("3", "5", "7", "10")
+        var selectedOption by remember(numberofdishes.value) {
+            mutableStateOf(
+                try {
+                    val count = numberofdishes.value.toInt()
+                    when (count) {
+                        in 1..2 -> sails[0]
+                        in 3..5 -> sails[1]
+                        in 6..10 -> sails[2]
+                        else -> sails[3]
                     }
-                )
-            }
-
-
+                } catch (e: NumberFormatException) {
+                    sails[3]
+                }
+            )
+        }
+        Row(modifier = Modifier.fillMaxWidth()){
 
                 Column (verticalArrangement = Arrangement.Center, modifier = Modifier.padding(30.dp), horizontalAlignment = Alignment.Start){
 
@@ -171,6 +165,17 @@ fun MainScreen(modifier: Modifier = Modifier){
                 }
             }
 
+        }
+        Row(modifier = Modifier.fillMaxWidth().padding(15.dp)) {
+            val finallysumm = try {
+                val s = summ.value.toInt()
+                val sel = selectedOption.toInt()
+                val slid = sliderPosition.toInt()
+                s - (s / 100 * sel) + (s / 100 * slid)
+            } catch (e: NumberFormatException) {
+                0
+            }
+            Text(text = "Итоговая сумма заказа: $finallysumm")
         }
     }
 
